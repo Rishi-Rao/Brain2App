@@ -18,6 +18,5 @@ Quick start (Linux / macOS / WSL / Windows with Node installed):
    (frontend runs on http://localhost:5173 by default)
 
 Notes:
-- This is a starter template to match your Streamlit UI and behavior.
 - Signup/login is persisted in server/users.json.
 - Upload endpoints are stubbed for future EEG/fMRI handling.
