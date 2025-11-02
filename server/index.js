@@ -25,6 +25,10 @@ function writeUsers(obj) {
 }
 
 // Signup
+app.get('/', (req, res) => {
+  return res.json({ok:"welcome to the app "})
+});
+
 app.post('/signup', (req, res) => {
   const { username, password } = req.body;
   if (!username || !password) return res.status(400).json({ message: 'username & password required' });
