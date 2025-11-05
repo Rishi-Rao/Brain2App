@@ -5,7 +5,6 @@ import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import Intro from "./pages/Intro";
 import Upload from "./pages/Upload";
-import Output from "./pages/Output";
 import Navbar from "./components/Navbar";
 import { loadTheme } from "./styles/theme";
 
@@ -111,21 +110,6 @@ const App = () => {
                       transition={pageTransition}
                     >
                       <Upload />
-                    </motion.div>
-                  }
-                />
-                <Route
-                  path="/output"
-                  element={
-                    <motion.div
-                      className="card card-glass"
-                      initial="initial"
-                      animate="in"
-                      exit="out"
-                      variants={pageVariants}
-                      transition={pageTransition}
-                    >
-                      <Output />
                     </motion.div>
                   }
                 />

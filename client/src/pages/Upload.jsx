@@ -6,25 +6,40 @@ const Upload = () => {
   const [eeg, setEeg] = useState(null);
   const [fmri, setFmri] = useState(null);
   const [generatedImg, setGeneratedImg] = useState(null);
-  const [loading, setLoading] = useState(false);
+  const [generatedText, setGeneratedText] = useState(null);
+  const [loadingImage, setLoadingImage] = useState(false);
+  const [loadingText, setLoadingText] = useState(false);  
+  const [audioSrc, setAudioSrc] = useState(null);
   const [error, setError] = useState(null);
 
-  // 🧠 Send EEG file to FastAPI backend
-  const handleGenerate = async () => {
-    if (!eeg) {
-      alert("Please upload an EEG CSV file first!");
+  const handleListen = async () => {
+    // Simple third-party TTS free endpoint (no guarantee). For local TTS, you'd call server to generate audio.
+    const url = `https://api.streamelements.com/kappa/v2/speech?voice=Brian&text=${encodeURIComponent(generatedText)}`;
+    setAudioSrc(url);
+  };
+
+
+  //  Send EEG file to FastAPI backend for image generation
+  const handleGenerateImage = async () => {
+    if (!eeg && !fmri) {
+      alert("Please upload an EEG or fMRI file first!");
       return;
     }
 
-    setLoading(true);
+    setLoadingImage(true);
     setError(null);
     setGeneratedImg(null);
 
     const formData = new FormData();
-    formData.append("file", eeg);
+    if (eeg) formData.append("file", eeg);
+    if (fmri) formData.append("file", fmri);
+
+    const url = eeg
+      ? "http://127.0.0.1:8000/generate_image" // EEG-to-Image
+      : "http://127.0.0.1:8000/generate_fmri_image"; // fMRI-to-Image
 
     try {
-      const res = await fetch("https://e435fefa5ef5.ngrok-free.app/generate_image", {
+      const res = await fetch(url, {
         method: "POST",
         body: formData,
       });
@@ -37,24 +52,56 @@ const Upload = () => {
       setGeneratedImg(imageUrl);
     } catch (err) {
       console.error(err);
-      setError("❌ Failed to generate image. Please check the backend server.");
+      setError(" Failed to generate image. Please check the backend server.");
     } finally {
-      setLoading(false);
+      setLoadingImage(false);
+    }
+  };
+
+  // Send EEG file to FastAPI backend for text generation
+  const handleGenerateText = async () => {
+    if (!eeg) {
+      alert("Please upload an EEG CSV file first!");
+      return;
+    }
+
+    setLoadingText(true);
+    setError(null);
+    setGeneratedText(null);
+
+    const formData = new FormData();
+    formData.append("file", eeg);
+
+    try {
+      const res = await fetch("http://127.0.0.1:8000/generate_text", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!res.ok) throw new Error(`Server error: ${res.statusText}`);
+
+      const text = await res.text();
+      setGeneratedText(text);
+    } catch (err) {
+      console.error(err);
+      setError("Failed to generate text. Please check the backend server.");
+    } finally {
+      setLoadingText(false);
     }
   };
 
   return (
     <div style={{ padding: 20 }}>
-      <h1>📤 Upload Your Data</h1>
+      <h1>Upload Your Data</h1>
 
-      <h4>🧠 Upload your EEG Readings</h4>
+      <h4>Upload your EEG Readings</h4>
       <input
         type="file"
         accept=".csv,.txt,.pth"
         onChange={(e) => setEeg(e.target.files[0])}
       />
 
-      <h4 style={{ marginTop: 16 }}>🧩 Upload your fMRI scans (optional)</h4>
+      <h4 style={{ marginTop: 16 }}>Upload your fMRI scans (optional)</h4>
       <input
         type="file"
         accept=".nii,.nii.gz,.zip"
@@ -65,44 +112,63 @@ const Upload = () => {
         <button onClick={() => navigate("/intro")}>⬅️ Back</button>
         <button
           style={{ marginLeft: 8 }}
-          onClick={handleGenerate}
-          disabled={loading}
+          onClick={handleGenerateImage}
+          disabled={loadingImage}
         >
-          {loading ? "⏳ Generating..." : "Generate ➡️"}
+          {loadingImage ? "Generating Image..." : "Generate Image ➡️"}
+        </button>
+        <button
+          style={{ marginLeft: 8 }}
+          onClick={handleGenerateText}
+          disabled={loadingText}
+        >
+          {loadingText ? "Generating Text..." : "Generate Text ➡️"}
         </button>
       </div>
 
-      {/* 🖼️ Show generated image */}
+      {/* Show generated image */}
       {generatedImg && (
-        <div style={{
-          marginTop: 32,
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center"
-        }}>
-          <h3>🎨 Generated Image</h3>
-
+        <div
+          style={{
+            marginTop: 32,
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+          }}
+        >
+          <h3>Generated Image</h3>
           <img
             src={generatedImg}
-            alt="Generated from EEG"
+            alt="Generated from EEG or fMRI"
             style={{
-              width: 256,      // or 256 if you want larger
-              height: 256,     // keep square like Python figure
+              width: 256, // or 256 if you want larger
+              height: 256, // keep square like Python figure
               borderRadius: 8,
               objectFit: "cover", // ensures the image isn’t stretched
               border: "1px solid #ccc",
-              marginTop: 16
+              marginTop: 16,
             }}
           />
+        </div>
+      )}
 
-          <div style={{ marginTop: 24 }}>
-            <button onClick={() => navigate("/output")}>Continue ➡️</button>
+      {/* Show generated text */}
+      {generatedText && (
+        <div style={{ flex: 1 }}>
+          <h4>Text Generated</h4>
+          <textarea value={generatedText} readOnly rows={10} style={{ width: "100%" }} />
+          <div style={{ marginTop: 8 }}>
+            <button onClick={handleListen}>Listen</button>
+            {audioSrc && (
+              <div style={{ marginTop: 8 }}>
+                <audio controls autoPlay src={audioSrc} />
+              </div>
+            )}
           </div>
         </div>
       )}
 
-
-      {/* ❌ Error message */}
+      {/*  Error message */}
       {error && <p style={{ color: "red", marginTop: 20 }}>{error}</p>}
     </div>
   );

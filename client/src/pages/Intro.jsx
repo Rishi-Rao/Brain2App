@@ -5,9 +5,9 @@ const Intro = () => {
   const navigate = useNavigate();
   return (
     <div>
-      <h1>EEG-fMRI Reconstruction Project</h1>
+      <h1>Brain2App</h1>
       <h3>Need for the Project</h3>
-      <p>This project reconstructs images and generates descriptive text from EEG and fMRI data using deep learning.</p>
+      <p>A brainwave-powered communication framework designed to help individuals with Locked-In Syndrome and severe speech impairments express themselves without physical movement.</p>
       <h3>Instructions for Use</h3>
       <ol>
         <li>Upload EEG and fMRI data.</li>

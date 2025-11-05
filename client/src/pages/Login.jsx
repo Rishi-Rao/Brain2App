@@ -27,7 +27,7 @@ const Login = ({ onLoginSuccess }) => {
 
   return (
     <div style={{textAlign: 'center', marginTop: 40}}>
-      <h1>🔐 Login</h1>
+      <h1>Login</h1>
       <div style={{marginTop:16}}>
         <input placeholder="Username" value={username} onChange={e=>setUsername(e.target.value)} />
       </div>
@@ -39,7 +39,7 @@ const Login = ({ onLoginSuccess }) => {
       </div>
       <div style={{marginTop:12}}>
         <div>Don't have an account?</div>
-        <button onClick={()=>navigate('/signup')}>Sign Up ➕</button>
+        <button onClick={()=>navigate('/signup')}>Sign Up</button>
       </div>
     </div>
   );
