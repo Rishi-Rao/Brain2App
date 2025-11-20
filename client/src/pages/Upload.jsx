@@ -13,7 +13,7 @@ const Upload = () => {
   const [error, setError] = useState(null);
 
   const handleListen = async () => {
-    // Simple third-party TTS free endpoint (no guarantee). For local TTS, you'd call server to generate audio.
+    // Simple third-party TTS free endpoint 
     const url = `https://api.streamelements.com/kappa/v2/speech?voice=Brian&text=${encodeURIComponent(generatedText)}`;
     setAudioSrc(url);
   };
@@ -36,7 +36,7 @@ const Upload = () => {
 
     const url = eeg
       ? "http://127.0.0.1:8000/generate_image" // EEG-to-Image
-      : "http://127.0.0.1:8000/generate_fmri_image"; // fMRI-to-Image
+      : "https://audrie-isobathythermic-nola.ngrok-free.dev/reconstruct"; // fMRI-to-Image
 
     try {
       const res = await fetch(url, {
@@ -141,14 +141,21 @@ const Upload = () => {
             src={generatedImg}
             alt="Generated from EEG or fMRI"
             style={{
-              width: 256, // or 256 if you want larger
-              height: 256, // keep square like Python figure
+              width: 256,
+              height: 256, 
               borderRadius: 8,
               objectFit: "cover", // ensures the image isn’t stretched
               border: "1px solid #ccc",
               marginTop: 16,
             }}
           />
+          <button
+            style={{ marginLeft: 8 }}
+            onClick={() => { setGeneratedImg(null) }}
+            disabled={loadingImage}
+          >
+            {"Clear"}
+          </button>
         </div>
       )}
 
@@ -165,6 +172,13 @@ const Upload = () => {
               </div>
             )}
           </div>
+          <button
+            style={{ marginLeft: 8 }}
+            onClick={() => { setGeneratedText(null) }}
+            disabled={loadingImage}
+          >
+            {"Clear"}
+          </button>
         </div>
       )}
 

@@ -2,7 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Import your theme colors */
 @import "./styles/theme.css";
 
 @layer base {

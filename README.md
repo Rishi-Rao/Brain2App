@@ -20,3 +20,10 @@ Quick start (Linux / macOS / WSL / Windows with Node installed):
 Notes:
 - Signup/login is persisted in server/users.json.
 - Upload endpoints are stubbed for future EEG/fMRI handling.
+
+To Run eeg-image server:
+1. Open terminal
+2. run the commands
+cd eeg-image
+uvicorn app:app --reload 
+(server runs on http://localhost:4000)

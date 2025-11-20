@@ -12,7 +12,7 @@ const App = () => {
   const [authenticated, setAuthenticated] = useState(false);
   const [user, setUser] = useState(null);
   const navigate = useNavigate();
-  const location = useLocation(); // ✅ This fixes the duplicate rendering
+  const location = useLocation(); 
 
   // Initialize theme on app mount
   useEffect(() => {
