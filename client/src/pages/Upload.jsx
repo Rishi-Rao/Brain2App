@@ -17,12 +17,14 @@ const Upload = () => {
   const [refinedText, setRefinedText] = useState("");
 
 
-  const handleListen = async () => {
-    const textToPlay = refinedText || generatedText;
-    if (!textToPlay) return;
-    // Simple third-party TTS free endpoint (no guarantee). For local TTS, you'd call server to generate audio.
-    const url = `https://api.streamelements.com/kappa/v2/speech?voice=Brian&text=${encodeURIComponent(textToPlay)}`;
-    setAudioSrc(url);
+  const handleListen = () => {
+    const text = refinedText || generatedText;
+    if (!text) return;
+
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.voice = speechSynthesis.getVoices().find(v => v.name === "Google UK English Male");
+
+    speechSynthesis.speak(utterance);
   };
 
   //  Send EEG file to FastAPI backend for image generation
